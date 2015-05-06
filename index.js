@@ -1,29 +1,51 @@
-import YoutubePodcast from './youtubePodcast.js';
 import express from 'express';
-import log from './log.js';
 import config from './config.js';
+import helpers from './helpers.js';
+import Feed from './youtube/feed.js';
+import Video from './youtube/video.js';
 
 const PORT = config.port;
 let app = express();
 
-app.get('*', function(req, res)
+app.get(helpers.cleanURL('/' + config.base_path + '/channel'), function(req, res)
 {
-	let channelID = req.query.channelID;
-	let youtubePodcast = new YoutubePodcast(channelID);
+	let id = req.query.id;
+	let feed = new Feed(id);
 
-	youtubePodcast.promise.then(
-	function(podcast)
+	feed.build().then(
+	(xml) =>
 	{
-		res.send(podcast.getXML());
+		helpers.log_success('RSS successfully created for channel ' + id);
+		res.send(xml);
 	},
-	function(error)
+	(error) =>
 	{
-		log.error(JSON.stringify(error));
-		res.send(JSON.stringify(error));
+		error = JSON.stringify(error, null, "\t");
+		helpers.log_error(error);
+		res.send(error);
+	});
+});
+
+app.get(helpers.cleanURL('/' + config.base_path + '/video'), function(req, res)
+{
+	let id = req.query.id;
+	let video = new Video(id);
+
+	video.getDownloadURL().then(
+	(url) =>
+	{
+		helpers.log_success('Redirecting to video ' + id);
+		res.redirect(301, url);
+	},
+	(error) =>
+	{
+		error = JSON.stringify(error, null, "\t");
+		helpers.log_error(error);
+		res.send(error);
 	});
 });
 
 app.listen(PORT, function()
 {
-	log.success('Server listening on port ' + PORT);
+	helpers.log_success('Server listening on port ' + PORT);
 });

@@ -77,6 +77,53 @@ export default {
 
 		return def.promise;
 	},
+	parseYoutubeDuration: (str) =>
+	{
+		var reptms = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/;
+		var hours = 0, minutes = 0, seconds = 0, totalseconds;
+
+		if (reptms.test(str))
+		{
+			var matches = reptms.exec(str);
+			if (matches[1]) hours = Number(matches[1]);
+			if (matches[2]) minutes = Number(matches[2]);
+			if (matches[3]) seconds = Number(matches[3]);
+			totalseconds = hours * 3600  + minutes * 60 + seconds;
+		}
+
+		return totalseconds;
+	},
+	cleanURL: function(url)
+	{
+		let protocol = '';
+		let rest = '';
+
+		if(url.substr(0,1) == '/')
+		{
+			protocol = '/';
+		}
+
+		switch(url.substr(0,5))
+		{
+			case 'http:':
+				protocol = 'http://';
+				rest = url.substr(7);
+				break;
+			case 'https':
+				protocol = 'https://';
+				rest = url.substr(8);
+				break;
+			default:
+				rest = url;
+		}
+
+		rest = rest
+				.split('/')
+				.filter((part) => { return part != ''; })
+				.join('/');
+
+		return protocol + rest;
+	},
 	log_success: function()
 	{
 		let message = serializeArguments(arguments);

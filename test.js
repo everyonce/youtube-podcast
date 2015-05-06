@@ -1,23 +1,13 @@
-import Youtube from './youtube/api.js';
+import Feed from './youtube/feed.js';
 import helpers from './helpers.js';
 
 let channel = 'UCEWHPFNilsT0IfQfutVzsag';
-let video = 'j-PSnhvG5fQ';
+let feed = new Feed(channel);
 
-// Youtube.getChannelVideos(channel).then(
-// (info) =>
-// {
-// 	helpers.log_success(info);
-// },
-// (error) =>
-// {
-// 	helpers.log_error(error);
-// });
-
-Youtube.getVideoInfo(video).then(
-(info) =>
+feed.build().then(
+(xml) =>
 {
-	helpers.log_success(info);
+	helpers.log_success(xml);
 },
 (error) =>
 {
