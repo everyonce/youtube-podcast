@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "./node_modules/.bin/babel-node ./index.js",
+    "forever": "forever start --uid youtube-podcast -a -c babel-node index.js"
   },
   "author": "",
   "license": "ISC",
