@@ -4,7 +4,7 @@ import helpers from './helpers.js';
 import Feed from './youtube/feed.js';
 import Video from './youtube/video.js';
 
-const PORT = config.port;
+const PORT = process.env.PORT || config.port;
 let app = express();
 
 app.get(helpers.cleanURL('/' + config.base_path + '/channel'), function(req, res)
