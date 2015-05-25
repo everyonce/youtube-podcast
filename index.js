@@ -1,20 +1,20 @@
 import express from 'express';
 
 var fs = require('fs');
+var cfile = './config_env.js';
 if (fs.existsSync('./config.js')) {
-	import config from './config.js';
-} else {
-	import config from './config_env.js';
+	cfile = './config.js';
 }
+var config = require(cfile);
 
 import helpers from './helpers.js';
 import Feed from './youtube/feed.js';
 import Video from './youtube/video.js';
 
-const PORT = config.port;
+const PORT = config.config.port;
 let app = express();
 
-app.get(helpers.cleanURL('/' + config.base_path + '/channel'), function(req, res)
+app.get(helpers.cleanURL('/' + config.config.base_path + '/channel'), function(req, res)
 {
 	let id = req.query.id;
 	let feed = new Feed(id);
@@ -33,7 +33,7 @@ app.get(helpers.cleanURL('/' + config.base_path + '/channel'), function(req, res
 	});
 });
 
-app.get(helpers.cleanURL('/' + config.base_path + '/video'), function(req, res)
+app.get(helpers.cleanURL('/' + config.config.base_path + '/video'), function(req, res)
 {
 	let id = req.query.id;
 	let video = new Video(id);
