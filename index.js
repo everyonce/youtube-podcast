@@ -1,7 +1,7 @@
 import express from 'express';
 
 var fs = require('fs');
-if (fs.existsSync('./config.js)) {
+if (fs.existsSync('./config.js')) {
 	import config from './config.js';
 } else {
 	import config from './config_env.js';
