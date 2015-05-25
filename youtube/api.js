@@ -11,6 +11,7 @@ if (fs.existsSync('./config.js')) {
 var config = require(cfile);
 
 const API_KEY = config.config.youtube_api_key;
+const API_MAX_VIDEOS = config.config.max_videos;
 const API_URL = 'https://www.googleapis.com/youtube/v3/';
 const DOWNLOAD_URL = config.config.base_url + '/' + config.config.base_path + '/video?id=';
 
@@ -38,7 +39,7 @@ let Youtube = {
 	{
 		helpers.log_info('Getting videos for channel ' + channelId);
 
-		let url = API_URL + 'search?order=date&part=snippet&fields=items&channelId=' + channelId + '&maxResults=15&key=' + API_KEY;
+		let url = API_URL + 'search?order=date&part=snippet&fields=items&channelId=' + channelId + '&maxResults='+API_MAX_VIDEOS+'&key=' + API_KEY;
 		return helpers.request(url).then((response) =>
 		{
 			let result = JSON.parse(response);
@@ -60,7 +61,7 @@ let Youtube = {
 	{
 		helpers.log_info('Getting info for video ' + videoId);
 
-		let url = API_URL + 'videos?part=snippet%2CcontentDetails&id=' + videoId + '&maxResults=15&key=' + API_KEY;
+		let url = API_URL + 'videos?part=snippet%2CcontentDetails&id=' + videoId + '&maxResults='+API_MAX_VIDEOS+'&key=' + API_KEY;
 		return helpers.request(url).then((response) =>
 		{
 			let result = JSON.parse(response);
