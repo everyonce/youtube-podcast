@@ -1,5 +1,12 @@
 import express from 'express';
-import config from './config.js';
+
+var fs = require('fs');
+if (fs.existsSync('./config.js)) {
+	import config from './config.js';
+} else {
+	import config from './config_env.js';
+}
+
 import helpers from './helpers.js';
 import Feed from './youtube/feed.js';
 import Video from './youtube/video.js';
