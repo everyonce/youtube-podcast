@@ -1,11 +1,18 @@
 import ytdl from 'ytdl-core';
 import Q from 'q';
 import helpers from '../helpers.js';
-import config from '../config.js';
 
-const API_KEY = config.youtube_api_key;
+//import config from '../config.js';
+var fs = require('fs');
+var cfile = '../config_env.js';
+if (fs.existsSync('./config.js')) {
+	cfile = '../config.js';
+}
+var config = require(cfile);
+
+const API_KEY = config.config.youtube_api_key;
 const API_URL = 'https://www.googleapis.com/youtube/v3/';
-const DOWNLOAD_URL = config.base_url + '/' + config.base_path + '/video?id=';
+const DOWNLOAD_URL = config.config.base_url + '/' + config.config.base_path + '/video?id=';
 
 let Youtube = {
 	getChannelInfo: (channelId) =>
