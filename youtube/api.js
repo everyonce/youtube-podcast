@@ -91,6 +91,7 @@ let Youtube = {
 			if (!success) {
 				console.log("cache failed with: " + success);
 			}	
+			helpers.log_info('Getting info for video (done) ' + videoId);
 			return videodata;
 		});
 	},
