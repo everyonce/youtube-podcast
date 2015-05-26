@@ -12,3 +12,4 @@ console.log("base_path: "+config.base_path);
 console.log("max_videos: "+config.max_videos);
 console.log("youtube_api_key: "+config.youtube_api_key);
 console.log("port: "+config.port);
+console.log("cache_ttl: "+config.cache_ttl);
