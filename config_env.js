@@ -3,7 +3,8 @@ var config = {
 	base_path: process.env.base_path || '',
 	youtube_api_key: process.env.youtube_api_key || 'missing_key',
 	max_videos: process.env.max_videos || 30,
-	port: process.env.PORT || 3000
+	port: process.env.PORT || 3000,
+	cache_ttl: process.env.cache_ttl || 1800
 };
 exports.config = config;
 console.log("base_url: "+config.base_url);

@@ -10,6 +10,9 @@ if (fs.existsSync('./config.js')) {
 }
 var config = require(cfile);
 
+var NodeCache = require( "node-cache" );
+var myCache = new NodeCache( { stdTTL: config.config.cache_ttl, checkperiod: 600 } );
+
 const API_KEY = config.config.youtube_api_key;
 const API_MAX_VIDEOS = config.config.max_videos;
 const API_URL = 'https://www.googleapis.com/youtube/v3/';
@@ -38,7 +41,7 @@ let Youtube = {
 	getChannelVideos: (channelId) =>
 	{
 		helpers.log_info('Getting videos for channel ' + channelId);
-
+		
 		let url = API_URL + 'search?order=date&part=snippet&fields=items&channelId=' + channelId + '&maxResults='+API_MAX_VIDEOS+'&key=' + API_KEY;
 		return helpers.request(url).then((response) =>
 		{
@@ -58,9 +61,15 @@ let Youtube = {
 		});
 	},
 	getVideoInfo: (videoId) =>
-	{
-		helpers.log_info('Getting info for video ' + videoId);
+	{		
+		var ckey = "getVideoInfo"+ videoId;
+		value = myCache.get(ckey);
+		if ( value != undefined ){
+			helpers.log_info('Getting info for video (cached) ' + videoId);
+			return value;
+		}
 
+		helpers.log_info('Getting info for video ' + videoId);
 		let url = API_URL + 'videos?part=snippet%2CcontentDetails&id=' + videoId + '&maxResults='+API_MAX_VIDEOS+'&key=' + API_KEY;
 		return helpers.request(url).then((response) =>
 		{
@@ -68,7 +77,7 @@ let Youtube = {
 			let info = result.items[0].snippet;
 			let duration = helpers.parseYoutubeDuration(result.items[0].contentDetails.duration);
 
-			return {
+			var videodata = {
 				title:			info.title,
 				description:	info.description,
 				thumbnail:		info.thumbnails.standard.url,
@@ -78,12 +87,23 @@ let Youtube = {
 				publishedAt:	helpers.formatDate(info.publishedAt),
 				duration:		helpers.formatTime(duration)
 			};
+			success = myCache.set(ckey, videodata);
+			if (!success) {
+				console.log("cache failed with: " + success);
+			}	
+			return videodata;
 		});
 	},
 	getVideoDownloadURL: (videoId) =>
 	{
-		helpers.log_info('Getting download URL for video ' + videoId);
+		var ckey = "getVideoDownloadURL"+ videoId;
+		value = myCache.get(ckey);
+		if ( value != undefined ){
+			helpers.log_info('Getting download URL for video (cached) ' + videoId);
+			return value;
+		}
 
+		helpers.log_info('Getting download URL for video ' + videoId);
 		var def = Q.defer();
 
 		ytdl.getInfo('https://www.youtube.com/watch?v=' + videoId, { downloadURL: true }, (err, info) =>
@@ -94,7 +114,12 @@ let Youtube = {
 			}
 			else
 			{
-				def.resolve(info.formats[0].url);
+				var murl = info.formats[0].url;
+				success = myCache.set(ckey, murl);
+				if (!success) {
+					console.log("cache failed with: " + success);
+				}	
+				def.resolve(murl);
 			}
 		});
 
