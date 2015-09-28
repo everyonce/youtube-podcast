@@ -1,0 +1,8 @@
+{
+	"host": "http://localhost",
+	"port": "3000",
+	"base_path": "/",
+	"youtube_api_key": "YOUR_API_KEY",
+	"max_videos": 30,
+	"cache_ttl": 1800
+}
