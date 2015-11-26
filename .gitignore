@@ -8,5 +8,4 @@ lib-cov
 coverage
 .lock-wscript
 node_modules
-config/*
-!config/default.json
+test/YOUTUBE_API_KEY

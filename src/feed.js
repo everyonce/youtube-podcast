@@ -1,18 +1,6 @@
-import async from 'async';
-import * as Youtube from './youtube.js';
-import { log, buildXML } from './helpers.js';
+import { buildXML } from './helpers.js';
 
-
-function getChannelInfoAndVideos(channelId, callback)
-{
-	return async.series(
-	[
-		(next) => Youtube.getChannelInfo(channelId, next),
-		(next) => Youtube.getChannelVideos(channelId, next)
-	], callback);
-}
-
-function createRSSFeed(info, videos, callback)
+export default function build(info, videos, buildURLFunction, callback)
 {
 	let author = info.title;
 	let rss =
@@ -79,12 +67,12 @@ function createRSSFeed(info, videos, callback)
 			{
 				"$":
 				{
-					"url": video.downloadURL,
+					"url": buildURLFunction(video.id),
 					"type": video.type,
 					"length": video.length
 				}
 			}],
-			"guid": [video.downloadURL],
+			"guid": [buildURLFunction(video.id)],
 			"pubDate": [video.publishedAt],//'Tue, 21 Apr 2015 15:50:25 +0200'
 			"category": ["TV & Film"],
 			"itunes:explicit": ["no"],
@@ -93,15 +81,5 @@ function createRSSFeed(info, videos, callback)
 		};
 	});
 
-	return callback(null, rss);
-}
-
-export default function buildFeed(channelId, callback)
-{
-	return async.waterfall(
-	[
-		(next) => getChannelInfoAndVideos(channelId, next),
-		(infoAndVideos, next) => createRSSFeed(infoAndVideos[0], infoAndVideos[1], next),
-		(rss, next) => buildXML({ rss }, next)
-	], callback);
+	return buildXML({ rss }, callback);
 }

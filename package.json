@@ -4,8 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "npm run build && node dist/index.js",
-    "dev": "nodemon --exec babel-node -- ./src/index.js",
+    "start": "npm run build && babel-node test/index.js",
+    "dev": "nodemon --exec babel-node -- ./test/index.js",
     "build": "rm -rf dist/* && babel src --out-dir dist"
   },
   "author": "",
