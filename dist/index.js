@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.createCache = createCache;
 exports.buildFeedForChannel = buildFeedForChannel;
 exports.buildFeedForUser = buildFeedForUser;
-exports.getVideo = getVideo;
+exports.getVideoDownloadURL = getVideoDownloadURL;
 
 var _feed = require('./feed');
 
@@ -46,6 +46,6 @@ function buildFeedForUser(cache, config, username) {
   });
 }
 
-function getVideo(videoId) {
+function getVideoDownloadURL(videoId) {
   return youtube.getVideoDownloadURL(videoId);
 }

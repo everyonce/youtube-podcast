@@ -3,16 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.log = undefined;
 exports.resolved = resolved;
 exports.rejected = rejected;
 exports.fetchJSON = fetchJSON;
-exports.parseXML = parseXML;
 exports.buildXML = buildXML;
 exports.formatTime = formatTime;
 exports.formatDate = formatDate;
 exports.parseYoutubeDuration = parseYoutubeDuration;
-exports.cleanURL = cleanURL;
 exports.removeUnsafeCharsAndEmojis = removeUnsafeCharsAndEmojis;
 
 var _colors = require('colors');
@@ -61,10 +58,6 @@ function fetchJSON(url) {
   }).then(function (res) {
     if (res.error) throw res.error;else return res;
   });
-}
-
-function parseXML(xml) {
-  return Q.nfcall(_xml2js2.default.parseString, xml);
 }
 
 function buildXML(obj) {
@@ -119,34 +112,6 @@ function parseYoutubeDuration(str) {
   return totalSeconds;
 }
 
-function cleanURL(url) {
-  var protocol = '';
-  var rest = '';
-
-  if (url.substr(0, 1) == '/') {
-    protocol = '/';
-  }
-
-  switch (url.substr(0, 5)) {
-    case 'http:':
-      protocol = 'http://';
-      rest = url.substr(7);
-      break;
-    case 'https':
-      protocol = 'https://';
-      rest = url.substr(8);
-      break;
-    default:
-      rest = url;
-  }
-
-  rest = rest.split('/').filter(function (part) {
-    return part != '';
-  }).join('/');
-
-  return protocol + rest;
-}
-
 function removeUnsafeCharsAndEmojis(unsafeStringWithEmoji) {
   var unsafeCharMap = {
     "&": "&amp;",
@@ -166,18 +131,3 @@ function removeUnsafeCharsAndEmojis(unsafeStringWithEmoji) {
 
   return safeStringWithoutEmoji;
 }
-
-var log = exports.log = {
-  success: function success(message) {
-    if (message == null || typeof message === 'undefined') message = 'undefined';
-    console.log(message.toString().bold.green);
-  },
-  error: function error(message) {
-    if (message == null || typeof message === 'undefined') message = 'undefined';
-    console.log(message.toString().bold.red);
-  },
-  info: function info(message) {
-    if (message == null || typeof message === 'undefined') message = 'undefined';
-    console.log(message.toString().bold.blue);
-  }
-};

@@ -5,8 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getChannelInfo = getChannelInfo;
 exports.getChannelVideos = getChannelVideos;
-exports.getVideoDownloadURL = getVideoDownloadURL;
 exports.getChannelIdFromUsername = getChannelIdFromUsername;
+exports.getVideoDownloadURL = getVideoDownloadURL;
 
 var _ytdlCore = require('ytdl-core');
 
@@ -119,12 +119,6 @@ function getChannelVideos(cache, config, channelId) {
   });
 };
 
-function getVideoDownloadURL(videoId) {
-  return Q.nfcall(_ytdlCore2.default.getInfo, 'https://www.youtube.com/watch?v=' + videoId, { downloadURL: true }).then(function (response) {
-    return response.formats[0].url;
-  });
-}
-
 function getChannelIdFromUsername(cache, _ref7, username) {
   var apiKey = _ref7.apiKey;
 
@@ -142,5 +136,11 @@ function getChannelIdFromUsername(cache, _ref7, username) {
     var channelId = items[0].id;
     cache.set(cacheKey, channelId);
     return channelId;
+  });
+}
+
+function getVideoDownloadURL(videoId) {
+  return _q2.default.nfcall(_ytdlCore2.default.getInfo, 'https://www.youtube.com/watch?v=' + videoId, { downloadURL: true }).then(function (response) {
+    return response.formats[0].url;
   });
 }
