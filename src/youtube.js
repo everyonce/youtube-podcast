@@ -96,7 +96,7 @@ export function getChannelIdFromUsername(cache, { apiKey }, username) {
   const cachedChannelId = cache.get(cacheKey);
 
   if(cachedChannelId) {
-    return cachedChannelId;
+    return resolved(cachedChannelId);
   }
 
   return fetchJSON(url).then(({items}) => {
