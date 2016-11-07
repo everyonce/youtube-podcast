@@ -1,75 +1,86 @@
 "use strict";
 
-module.exports = build;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = build;
 
-var buildXML = require("./helpers.js").buildXML;
+var _helpers = require("./helpers.js");
 
-function build(info, videos, buildURLFunction, callback) {
-	var author = info.title;
-	var rss = {
-		$: {
-			"xmlns:itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd",
-			version: "2.0",
-			"xmlns:atom": "http://www.w3.org/2005/Atom"
-		},
-		channel: [{
-			"atom:link": [{
-				$: {
-					rel: "self",
-					type: "application/rss+xml",
-					href: info.site
-				}
-			}],
-			lastBuildDate: [info.publishedAt],
-			title: [info.title],
-			"itunes:author": [info.title],
-			link: [info.site],
-			description: [info.description],
-			"itunes:subtitle": [info.description.substr(0, 100) + "..."],
-			"itunes:summary": [info.description],
-			language: ["en"],
-			"itunes:owner": [{
-				"itunes:name": [info.title],
-				"itunes:email": ["n@n.n"]
-			}],
-			image: [{
-				url: [info.thumbnail],
-				title: [info.title],
-				link: [info.site]
-			}],
-			"itunes:image": [{ $: { href: info.thumbnail } }],
-			category: ["TV & Film", "Podcasting"],
-			"itunes:category": [{ $: { text: "TV & Film" } }, {
-				$: { text: "Technology" },
-				"itunes:category": [{ $: { text: "Podcasting" } }]
-			}],
-			"itunes:explicit": ["no"],
-			item: []
-		}]
-	};
+function build(info, videos, urlBuilder) {
+  var escapedTitle = (0, _helpers.removeUnsafeCharsAndEmojis)(info.title);
+  var escapedAuthor = escapedTitle;
+  var escapedDescription = (0, _helpers.removeUnsafeCharsAndEmojis)(info.description);
 
-	rss.channel[0].item = videos.map(function (video) {
-		return {
-			title: [video.title],
-			"itunes:author": [author],
-			description: [video.description],
-			"itunes:subtitle": [video.description.substr(0, 100) + "..."],
-			"itunes:summary": [""],
-			enclosure: [{
-				$: {
-					url: buildURLFunction(video.id),
-					type: video.type,
-					length: video.length
-				}
-			}],
-			guid: [buildURLFunction(video.id)],
-			pubDate: [video.publishedAt], //'Tue, 21 Apr 2015 15:50:25 +0200'
-			category: ["TV & Film"],
-			"itunes:explicit": ["no"],
-			"itunes:duration": [video.duration],
-			"itunes:keywords": ["YouTube"]
-		};
-	});
+  var rss = {
+    "$": {
+      "xmlns:itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd",
+      "version": "2.0",
+      "xmlns:atom": "http://www.w3.org/2005/Atom"
+    },
+    "channel": [{
+      "atom:link": [{
+        "$": {
+          "rel": "self",
+          "type": "application/rss+xml",
+          "href": info.site
+        }
+      }],
+      "lastBuildDate": [info.publishedAt],
+      "title": [escapedTitle],
+      "itunes:author": [escapedTitle],
+      "link": [info.site],
+      "description": [escapedDescription],
+      "itunes:subtitle": [escapedDescription.substr(0, 100) + '...'],
+      "itunes:summary": [escapedDescription],
+      "language": ["en"],
+      "itunes:owner": [{
+        "itunes:name": [escapedTitle],
+        "itunes:email": ['n@n.n']
+      }],
+      "image": [{
+        "url": [info.thumbnail],
+        "title": [escapedTitle],
+        "link": [info.site]
+      }],
+      "itunes:image": [{ "$": { "href": info.thumbnail } }],
+      "category": ["TV & Film", "Podcasting"],
+      "itunes:category": [{
+        "$": { "text": "TV & Film" }
+      }, {
+        "$": { "text": "Technology" },
+        "itunes:category": [{ "$": { "text": "Podcasting" } }]
+      }],
+      "itunes:explicit": ["no"],
+      "item": []
+    }]
+  };
 
-	return buildXML({ rss: rss }, callback);
+  rss.channel[0].item = videos.map(function (video) {
+    var escapedTitle = (0, _helpers.removeUnsafeCharsAndEmojis)(video.title);
+    var escapedDescription = (0, _helpers.removeUnsafeCharsAndEmojis)(video.description);
+
+    return {
+      "title": [escapedTitle],
+      "itunes:author": [escapedAuthor],
+      "description": [escapedDescription],
+      "itunes:subtitle": [escapedDescription.substr(0, 100) + '...'],
+      "itunes:summary": [''],
+      "enclosure": [{
+        "$": {
+          "url": urlBuilder(video.id),
+          "type": video.type,
+          "length": video.length
+        }
+      }],
+      "guid": [urlBuilder(video.id)],
+      "pubDate": [video.publishedAt],
+      "category": ["TV & Film"],
+      "itunes:explicit": ["no"],
+      "itunes:duration": [video.duration],
+      "itunes:keywords": ['YouTube']
+    };
+  });
+
+  return (0, _helpers.buildXML)({ rss: rss });
 }

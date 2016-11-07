@@ -1,51 +1,25 @@
-import async from 'async';
 import buildFeed from './feed';
-import Youtube from './youtube';
+import * as youtube from './youtube';
+import NodeCache from 'node-cache';
+import q from 'q';
 
-export default class YoutubePodcast
-{
-	constructor(config)
-	{
-		this.buildURLFunction = config.buildURLFunction;
+export function createCache(ttl = 1800) {
+  return new NodeCache({ stdTTL: ttl, checkperiod: 600 });
+}
 
-		this.youtube = new Youtube(
-		{
-			apiKey: config.apiKey,
-			maxVideos: config.maxVideos,
-			cacheTTL: config.cacheTTL
-		});
-	}
+export function buildFeedForChannel(cache, config, channelId) {
+  return q.all([
+    youtube.getChannelInfo(cache, config, channelId),
+    youtube.getChannelVideos(cache, config, channelId)
+  ])
+  .spread((info, videos) => buildFeed(info, videos, config.urlBuilder));
+}
 
-	_getChannelInfoAndVideos(channelId, callback)
-	{
-		return async.series(
-		[
-			(next) => this.youtube.getChannelInfo(channelId, next),
-			(next) => this.youtube.getChannelVideos(channelId, next)
-		], callback);
-	}
+export function buildFeedForUser(cache, config, username) {
+  return youtube.getChannelIdFromUsername(cache, config, username)
+  .then((channelId) => buildFeedForChannel(cache, config, channelId))
+}
 
-	feedForUser(username, callback)
-	{
-		return async.waterfall(
-		[
-			(next) => this.youtube.getChannelIdFromUsername(username, next),
-			(channelId, next) => this._getChannelInfoAndVideos(channelId, next),
-			(infoAndVideos, next) => buildFeed(infoAndVideos[0], infoAndVideos[1], this.buildURLFunction, next)
-		], callback);
-	}
-
-	feedForChannel(channelId, callback)
-	{
-		return async.waterfall(
-		[
-			(next) => this._getChannelInfoAndVideos(channelId, next),
-			(infoAndVideos, next) => buildFeed(infoAndVideos[0], infoAndVideos[1], this.buildURLFunction, next)
-		], callback);
-	}
-
-	video(videoId, callback)
-	{
-		return this.youtube.getVideoDownloadURL(videoId, callback);
-	}
-};
+export function getVideo(videoId) {
+  return youtube.getVideoDownloadURL(videoId);
+}

@@ -1,18 +1,19 @@
-import fs from 'fs';
-import async from 'async';
-import buildFeed from '../dist/feed';
-import YoutubePodcast from '../dist/index';
+import * as YoutubePodcast from '../src/index';
 
-let yp = new YoutubePodcast(
-{
-	buildURLFunction: (videoId) => 'http://teste/' + videoId,
-	apiKey: fs.readFileSync(__dirname + '/YOUTUBE_API_KEY'),
-	maxVideos: 30,
-	cacheTTL: 1800
-});
+const exit = () => process.exit();
+const cache = YoutubePodcast.createCache();
+const config = {
+  urlBuilder: (videoId) => `http://localhost/video?id=${videoId}`,
+  apiKey: 'AIzaSyDK-fBzaiATOKWqbra3ov04j5C6tBX2EpQ',
+  maxVideos: 30,
+};
 
-yp.feedForUser('Pirulla25', function(err, xml)
-{
-	console.log(err || xml);
-	process.exit();
-});
+YoutubePodcast
+.buildFeedForChannel(cache, config, 'UCO1cgjhGzsSYb1rsB4bFe4Q')
+.then((res) => console.log('buildFeedForChannel: success'))
+.catch((res) => console.log('buildFeedForChannel: error', res));
+
+YoutubePodcast
+.buildFeedForUser(cache, config, 'Pirulla25')
+.then((res) => console.log('buildFeedForUser: success'))
+.catch((res) => console.log('buildFeedForUser: error', res));

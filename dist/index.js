@@ -1,74 +1,51 @@
-"use strict";
+'use strict';
 
-var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createCache = createCache;
+exports.buildFeedForChannel = buildFeedForChannel;
+exports.buildFeedForUser = buildFeedForUser;
+exports.getVideo = getVideo;
 
-var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _feed = require('./feed');
 
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+var _feed2 = _interopRequireDefault(_feed);
 
-var async = _interopRequire(require("async"));
+var _youtube = require('./youtube');
 
-var buildFeed = _interopRequire(require("./feed"));
+var youtube = _interopRequireWildcard(_youtube);
 
-var Youtube = _interopRequire(require("./youtube"));
+var _nodeCache = require('node-cache');
 
-var YoutubePodcast = (function () {
-	function YoutubePodcast(config) {
-		_classCallCheck(this, YoutubePodcast);
+var _nodeCache2 = _interopRequireDefault(_nodeCache);
 
-		this.buildURLFunction = config.buildURLFunction;
+var _q = require('q');
 
-		this.youtube = new Youtube({
-			apiKey: config.apiKey,
-			maxVideos: config.maxVideos,
-			cacheTTL: config.cacheTTL
-		});
-	}
+var _q2 = _interopRequireDefault(_q);
 
-	_createClass(YoutubePodcast, {
-		_getChannelInfoAndVideos: {
-			value: function _getChannelInfoAndVideos(channelId, callback) {
-				var _this = this;
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-				return async.series([function (next) {
-					return _this.youtube.getChannelInfo(channelId, next);
-				}, function (next) {
-					return _this.youtube.getChannelVideos(channelId, next);
-				}], callback);
-			}
-		},
-		feedForUser: {
-			value: function feedForUser(username, callback) {
-				var _this = this;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-				return async.waterfall([function (next) {
-					return _this.youtube.getChannelIdFromUsername(username, next);
-				}, function (channelId, next) {
-					return _this._getChannelInfoAndVideos(channelId, next);
-				}, function (infoAndVideos, next) {
-					return buildFeed(infoAndVideos[0], infoAndVideos[1], _this.buildURLFunction, next);
-				}], callback);
-			}
-		},
-		feedForChannel: {
-			value: function feedForChannel(channelId, callback) {
-				var _this = this;
+function createCache() {
+  var ttl = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1800;
 
-				return async.waterfall([function (next) {
-					return _this._getChannelInfoAndVideos(channelId, next);
-				}, function (infoAndVideos, next) {
-					return buildFeed(infoAndVideos[0], infoAndVideos[1], _this.buildURLFunction, next);
-				}], callback);
-			}
-		},
-		video: {
-			value: function video(videoId, callback) {
-				return this.youtube.getVideoDownloadURL(videoId, callback);
-			}
-		}
-	});
+  return new _nodeCache2.default({ stdTTL: ttl, checkperiod: 600 });
+}
 
-	return YoutubePodcast;
-})();
+function buildFeedForChannel(cache, config, channelId) {
+  return _q2.default.all([youtube.getChannelInfo(cache, config, channelId), youtube.getChannelVideos(cache, config, channelId)]).spread(function (info, videos) {
+    return (0, _feed2.default)(info, videos, config.urlBuilder);
+  });
+}
 
-module.exports = YoutubePodcast;
+function buildFeedForUser(cache, config, username) {
+  return youtube.getChannelIdFromUsername(cache, config, username).then(function (channelId) {
+    return buildFeedForChannel(cache, config, channelId);
+  });
+}
+
+function getVideo(videoId) {
+  return youtube.getVideoDownloadURL(videoId);
+}
