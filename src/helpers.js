@@ -1,4 +1,3 @@
-import colors from 'colors';
 import xml2js from 'xml2js';
 import moment from 'moment';
 import fetch from 'node-fetch';

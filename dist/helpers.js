@@ -12,10 +12,6 @@ exports.formatDate = formatDate;
 exports.parseYoutubeDuration = parseYoutubeDuration;
 exports.removeUnsafeCharsAndEmojis = removeUnsafeCharsAndEmojis;
 
-var _colors = require('colors');
-
-var _colors2 = _interopRequireDefault(_colors);
-
 var _xml2js = require('xml2js');
 
 var _xml2js2 = _interopRequireDefault(_xml2js);
