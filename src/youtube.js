@@ -91,7 +91,7 @@ export function getChannelVideos(cache, config, channelId) {
 };
 
 export function getVideoDownloadURL(videoId) {
-  return Q.nfcall(
+  return q.nfcall(
     ytdl.getInfo,
     `https://www.youtube.com/watch?v=${videoId}`,
     { downloadURL: true }
