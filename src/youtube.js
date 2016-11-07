@@ -90,15 +90,6 @@ export function getChannelVideos(cache, config, channelId) {
   });
 };
 
-export function getVideoDownloadURL(videoId) {
-  return q.nfcall(
-    ytdl.getInfo,
-    `https://www.youtube.com/watch?v=${videoId}`,
-    { downloadURL: true }
-  )
-  .then((response) => response.formats[0].url);
-}
-
 export function getChannelIdFromUsername(cache, { apiKey }, username) {
   const url = `${API_URL}channels?part=contentDetails&forUsername=${username}&key=${apiKey}`;
   const cacheKey = 'channel_id_for_username_' + username;
@@ -113,4 +104,13 @@ export function getChannelIdFromUsername(cache, { apiKey }, username) {
     cache.set(cacheKey, channelId);
     return channelId;
   });
+}
+
+export function getVideoDownloadURL(videoId) {
+  return q.nfcall(
+    ytdl.getInfo,
+    `https://www.youtube.com/watch?v=${videoId}`,
+    { downloadURL: true }
+  )
+  .then((response) => response.formats[0].url);
 }

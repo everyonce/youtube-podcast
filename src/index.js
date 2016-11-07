@@ -20,6 +20,6 @@ export function buildFeedForUser(cache, config, username) {
   .then((channelId) => buildFeedForChannel(cache, config, channelId))
 }
 
-export function getVideo(videoId) {
+export function getVideoDownloadURL(videoId) {
   return youtube.getVideoDownloadURL(videoId);
 }

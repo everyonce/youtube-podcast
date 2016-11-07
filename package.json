@@ -15,6 +15,7 @@
     "node-fetch": "^1.6.3",
     "q": "^1.4.1",
     "xml2js": "^0.4.8",
+    "youtube-dl": "^1.11.1",
     "ytdl-core": "^0.5.1"
   },
   "devDependencies": {

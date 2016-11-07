@@ -17,3 +17,8 @@ YoutubePodcast
 .buildFeedForUser(cache, config, 'Pirulla25')
 .then((res) => console.log('buildFeedForUser: success'))
 .catch((res) => console.log('buildFeedForUser: error', res));
+
+YoutubePodcast
+.getVideoDownloadURL('CDFN1VatiJA')
+.then((res) => console.log('getVideoDownloadURL: success', res))
+.catch((res) => console.log('getVideoDownloadURL: error', res));
