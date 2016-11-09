@@ -127,7 +127,7 @@ function getChannelIdFromUsername(cache, _ref7, username) {
   var cachedChannelId = cache.get(cacheKey);
 
   if (cachedChannelId) {
-    return cachedChannelId;
+    return (0, _helpers.resolved)(cachedChannelId);
   }
 
   return (0, _helpers.fetchJSON)(url).then(function (_ref8) {
